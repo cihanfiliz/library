@@ -22,9 +22,12 @@ class BookController extends AbstractController
     /**
      * @Route("/api/books", name="get_books", methods={"GET"})
     */
-    public function getBooks(): JsonResponse
+    public function getBooks(Request $request): JsonResponse
     {
-        $books = $this->entityManager->getRepository(Book::class)->findAll();
+        $start = $request->query->get('start', 0);
+        $limit = $request->query->get('limit', 10);
+
+        $books = $this->entityManager->getRepository(Book::class)->findByRange($start, $limit);
         return $this->json($books);
     }
 

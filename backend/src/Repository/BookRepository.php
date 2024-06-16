@@ -28,18 +28,28 @@ class BookRepository extends ServiceEntityRepository
      * @param string|null $author
      * @return Book[]
      */
+
+    public function findByRange(int $start, int $limit)
+    {
+        return $this->createQueryBuilder('b')
+            ->setFirstResult($start)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findByTitleAndAuthor(?string $title, ?string $author): array
     {
         $queryBuilder = $this->createQueryBuilder('b');
 
         if ($title) {
             $queryBuilder->andWhere('b.title LIKE :title')
-                         ->setParameter('title', '%' . $title . '%');
+                ->setParameter('title', '%' . $title . '%');
         }
 
         if ($author) {
             $queryBuilder->andWhere('b.author LIKE :author')
-                         ->setParameter('author', '%' . $author . '%');
+                ->setParameter('author', '%' . $author . '%');
         }
 
         return $queryBuilder->getQuery()->getResult();
