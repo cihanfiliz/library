@@ -1,4 +1,13 @@
 services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - www
+
   mariadb:
     container_name: mariadb
     image: docker.io/bitnami/mariadb:11.3
@@ -23,10 +32,9 @@ services:
     depends_on:
       - mariadb
     
-  # Symfony apache project container
   www:
     build: docker/php
-    container_name: tutorial_symfony
+    container_name: symfony
     ports:
       - "8741:80"
     volumes:
