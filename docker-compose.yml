@@ -1,0 +1,87 @@
+#version: '3.8'
+
+# services:
+#   mariadb:
+#     networks:
+#       - my_docker_network
+#     image: bitnami/mariadb:latest
+#     environment:
+#       - ALLOW_EMPTY_PASSWORD=yes
+#       - MARIADB_ROOT_USER=root
+#       - MARIADB_ROOT_PASSWORD=
+#       - MARIADB_DATABASE=library_db
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - mariadb_data:/bitnami/mariadb
+
+#   pma:
+#     networks:
+#       - my_docker_network
+#     image: phpmyadmin/phpmyadmin
+#     ports:
+#       - 80:80
+#     environment:
+#       - PMA_HOST=db
+
+#   symfony:
+#     image: bitnami/symfony:latest
+#     environment:
+#       - SYMFONY_PROJECT_SKELETON=symfony/skeleton
+#       - SYMFONY_DATABASE_HOST=mariadb
+#       - SYMFONY_DATABASE_PORT=3306
+#       - SYMFONY_DATABASE_USER=root
+#       - SYMFONY_DATABASE_PASSWORD= # set this to your database password or leave empty if using ALLOW_EMPTY_PASSWORD
+#       - ALLOW_EMPTY_PASSWORD=yes
+#     ports:
+#       - "8000:8000"
+#     depends_on:
+#       - mariadb
+
+# volumes:
+#   mariadb_data:
+#     driver: local
+
+
+# Copyright Broadcom, Inc. All Rights Reserved.
+# SPDX-License-Identifier: APACHE-2.0
+
+services:
+  mariadb:
+    container_name: mariadb
+    image: docker.io/bitnami/mariadb:11.3
+    ports:
+      - '3306:3306'
+    environment:
+      - MARIADB_ROOT_USER=root
+      - MARIADB_ROOT_PASSWORD=bitnami
+    volumes:
+      - 'mariadb_data:/bitnami'
+  
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: docker.io/bitnami/phpmyadmin:5
+    ports:
+      - '80:8080'
+      - '443:8443'
+    environment:
+      PMA_HOST: 'db'
+      PMA_USER: 'root'
+      PMA_PASSWORD: 'bitnami'
+    depends_on:
+      - mariadb
+    
+  # Symfony apache project container
+  www:
+    build: docker/php
+    container_name: tutorial_symfony
+    ports:
+      - "8741:80"
+    volumes:
+      - ./docker/php/vhosts:/etc/apache2/sites-enabled
+      - ./:/var/www
+    restart: always
+
+volumes:
+  mariadb_data:
+    driver: local
