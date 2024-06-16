@@ -1,3 +1,13 @@
-controllers:
-    resource: ../src/Controller/
-    type: attribute
+# controllers:
+#     resource: ../src/Controller/BookController.php
+#     type: attribute
+
+book_list:
+  path: /api/books
+  controller: App\Controller\BookController::getBooks
+  methods: [GET]
+
+search_list:
+  path: /api/books/search
+  controller: App\Controller\BookController::searchBooks
+  methods: [GET]
